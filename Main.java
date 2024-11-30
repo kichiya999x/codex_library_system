@@ -1,5 +1,6 @@
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.*;
 
 public class Main {
@@ -8,6 +9,8 @@ public class Main {
     private static userPrompt userPrompt = new userPrompt();
     private static Scanner input = new Scanner(System.in);
     private static ArrayList<Material> library = new ArrayList<>();
+    private static Map<Integer, BorrowersHistory> borrowersHistoryMap = new HashMap<>();
+    private static Map<String, AssetHistory> assetHistoryMap = new HashMap<>();
 
     FileReader fr = null;
     FileWriter fw = null;
@@ -120,12 +123,12 @@ public class Main {
                     System.out.println("********************************************************");
                     System.out.println("Borrower's History");
                     System.out.println("********************************************************");
-                    // viewBorrowerHistory();
+                    viewBorrowerHistory();
                     break;
                 case 6:
                     ClearScreen();
                     System.out.println("Assets History");
-                    // viewAssetHistory();
+                    viewAssetHistory();
                     break;
 
                 case 7:
@@ -140,6 +143,27 @@ public class Main {
 
         userPrompt.closeScanner();
     }
+
+    private static void viewBorrowerHistory() {
+        int borrowerId = userPrompt.getValidIntegerInput("Enter Borrower ID: ");
+        BorrowersHistory history = borrowersHistoryMap.get(borrowerId);
+        if (history != null) {
+            history.displayHistory();
+        } else {
+            System.out.println("No history found for Borrower ID: " + borrowerId);
+        }
+    }
+
+    private static void viewAssetHistory() {
+        String materialID = userPrompt.promptForValidMaterialID("Enter Material ID: ", library);
+        AssetHistory history = assetHistoryMap.get(materialID);
+        if (history != null) {
+            history.displayHistory();
+        } else {
+            System.out.println("No history found for Material ID: " + materialID);
+        }
+    }
+
 
     private static void AddBorrower() {
         loadBorrowersFromFile();
