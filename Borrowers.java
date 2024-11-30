@@ -124,6 +124,14 @@ public class Borrowers {
         }
     }
 
+    public Material getBorrowedMaterial() {
+        return borrowedMaterial;
+    }
+
+    public void setBorrowedMaterial(Material borrowedMaterial) {
+        this.borrowedMaterial = borrowedMaterial;
+    }
+
     
     @Override
     public String toString() {
