@@ -281,7 +281,7 @@ class userPrompt {
 
     public String promptForValidMaterialID(String prompt, ArrayList<Material> library) {
 
-        Scanner scanner = new Scanner(System.in);
+        // Scanner scanner = new Scanner(System.in);
         String materialID;
 
         boolean isValid;
