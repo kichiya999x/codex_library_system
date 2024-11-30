@@ -1,5 +1,8 @@
+
+
 public class Borrowers {
-    public int id;
+
+    private int id;
     private String lastName;
     private String firstName;
     private String middleName;
@@ -22,11 +25,11 @@ public class Borrowers {
         this.contactNumber = contactNumber;
         this.email = email;
         this.address = address;
-        this.violationNum = 0; // Default violations to 0
-        this.borrowedMaterial = null; // Initially no material borrowed
+        this.violationNum = 0; 
+        this.borrowedMaterial = null; 
     }
 
-    // Getters and setters
+    
     public int getId() {
         return id;
     }
@@ -116,39 +119,15 @@ public class Borrowers {
     public void incrementViolationNum() {
         if (violationNum < 3) {
             violationNum++;
-        }
-    }
-
-    public Material getBorrowedMaterial() {
-        return borrowedMaterial;
-    }
-
-    // Borrow material with check for availability and violations
-    public void borrowMaterial(Material material) {
-        if (material.getCopies() > 0 && canBorrow()) {
-            this.borrowedMaterial = material;
-            material.borrow(); // Borrow the material (decrement copies)
         } else {
-            System.out.println("Borrower cannot borrow this material. Either the material is unavailable or there are violations.");
+            System.out.println("Borrower has reached the maximum number of violations.");
         }
     }
 
-    // Return borrowed material and update material availability
-    public void returnMaterial() {
-        if (borrowedMaterial != null) {
-            borrowedMaterial.returnMaterial(); // Reset material's borrow status and increase copies
-            borrowedMaterial = null; // Remove the borrowed material reference
-        }
-    }
-
-    // Check if borrower can borrow a material
-    public boolean canBorrow() {
-        return violationNum < 3 && borrowedMaterial == null;
-    }
-
+    
     @Override
     public String toString() {
-        return "BORROWER ID: " + id +
-                "\nNAME: " + firstName.toUpperCase() + " " + middleName.toUpperCase() + " " + lastName.toUpperCase();
+        return "BORROWER ID: " + id
+                + "\nNAME: " + firstName.toUpperCase() + " " + middleName.toUpperCase() + " " + lastName.toUpperCase();
     }
 }
