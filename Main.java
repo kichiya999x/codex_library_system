@@ -1,6 +1,5 @@
 
 import java.io.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Main {
@@ -106,16 +105,21 @@ public class Main {
                     System.out.println("********************************************************");
                     System.out.println("Borrow Material");
                     System.out.println("********************************************************");
-                    BorrowMaterial();
+                    //BorrowMaterial();
                     break;
                 case 4:
                     ClearScreen();
-                    System.out.println("Return");
+                    System.out.println("********************************************************");
+                    System.out.println("Borrow Material");
+                    System.out.println("********************************************************");
+                    // ReturnMaterial();
                     break;
 
                 case 5:
                     ClearScreen();
-                    System.out.println("Borrowers History");
+                    System.out.println("********************************************************");
+                    System.out.println("Borrower's History");
+                    System.out.println("********************************************************");
                     // viewBorrowerHistory();
                     break;
                 case 6:
@@ -368,14 +372,14 @@ public class Main {
             while (material == null) {
                 System.out.println("Material ID not found. Please enter a valid Material ID.");
                 materialID = userPrompt.promptForValidMaterialID("Enter Material ID: ", library);
-                material = findMaterialByID(materialID); // Check again with the new input
+                material = findMaterialByID(materialID); 
             }
 
-            // Show the material type and provide options for editing based on the type
+            
             System.out.println("Material Type: " + material.getClass().getSimpleName());
             System.out.println("\nChoose What to Edit:");
 
-            // Show editing options based on the type of the material
+            
             if (material instanceof Book) {
                 System.out.println("[0] Enter Another Material ID to Edit");
                 System.out.println("[1] Title");
@@ -404,7 +408,7 @@ public class Main {
                 System.out.println("[5] Author");
             } else {
                 System.out.println("[0] Enter Another Material ID to Edit");
-                continue;  // In case of unsupported material types
+                continue;  
             }
 
             int editChoice = userPrompt.getValidIntegerInput("Enter Choice: ");
@@ -445,7 +449,7 @@ public class Main {
                     material.setCopies(copies);
                     break;
 
-                case 5:
+                case 5: //Author Editing
                     if (material instanceof Book || material instanceof ThesisBook) {
                         String author = userPrompt.promptForValidString("Enter New Author: ");
                         if (material instanceof Book) {
@@ -496,8 +500,13 @@ public class Main {
 
                 switch (deleteChoice) {
                     case 1:
-                        borrowers.remove(borrower);
-                        System.out.println("Borrower's Information Deleted Successfully!");
+                        System.out.println("Attempting to delete borrower with ID: " + borrowerId);
+                        boolean removed = borrowers.remove(borrower);
+                        if (removed) {
+                            System.out.println("Borrower's Information Deleted Successfully!");
+                        } else {
+                            System.out.println("Failed to delete borrower. Borrower may not exist in the list.");
+                        }
                         saveBorrowersToFile();
                         break;
 
@@ -525,15 +534,15 @@ public class Main {
             System.out.println("********************************************************");
             String materialID = userPrompt.promptForValidMaterialID("Enter Material ID: ", library);
 
-            // Find the material by ID
+            
             Material material = findMaterialByID(materialID);
             while (material == null) {
                 System.out.println("Material ID not found. Please enter a valid Material ID.");
                 materialID = userPrompt.promptForValidMaterialID("Enter Material ID: ", library);
-                material = findMaterialByID(materialID); // Check again with the new input
+                material = findMaterialByID(materialID); 
             }
 
-            // Show the material type and provide options for deleting based on the type
+            
             System.out.println("Material Type: " + material.getClass().getSimpleName());
             System.out.println("Are you sure you want to delete this material?");
             System.out.println("[1] Yes");
@@ -631,82 +640,8 @@ public class Main {
         }
     }
 
-    private static void BorrowMaterial() {
-        loadBorrowersFromFile();
-        loadAssets();
-        Borrowers borrower = null;
-        Material material = null;
-
-        boolean continueBorrowing = true;
-        while (continueBorrowing) {
-            ClearScreen();
-            System.out.println("********************************************************");
-            System.out.println("              Borrow Material");
-            System.out.println("********************************************************");
-
-            // Get Borrower ID and check if they exist
-            int borrowerId = userPrompt.getValidIntegerInput("Enter Borrower ID: ");
-            borrower = findBorrowersById(borrowerId);
-            if (borrower == null) {
-                System.out.println("Borrower ID not found.");
-                continueBorrowing = userPrompt.confirmContinue("Try Another Borrower?");
-                continue;
-            }
-
-            // Check if the borrower has exceeded the violation number
-            int violationLimit = 3; // Example violation limit
-            if (borrower.getViolationNum() >= violationLimit) {
-                System.out.println("Borrower has exceeded the allowed number of violations.");
-                continueBorrowing = userPrompt.confirmContinue("Try Another Borrower?");
-                continue;
-            }
-
-            // Check if the borrower already has a borrowed material
-            if (borrower.getBorrowedMaterial() != null) {
-                System.out.println("Borrower already has a borrowed material.");
-                continueBorrowing = userPrompt.confirmContinue("Try Another Borrower?");
-                continue;
-            }
-
-            // Get Material ID and check if it exists
-            String materialID = userPrompt.promptForValidMaterialID("Enter Material ID: ", library);
-            material = findMaterialByID(materialID);
-            if (material == null) {
-                System.out.println("Material ID not found.");
-                continueBorrowing = userPrompt.confirmContinue("Try Another Material?");
-                continue;
-            }
-
-            // Check if there are available copies of the material
-            if (material.getCopies() == 0) {
-                System.out.println("No available copies of the material.");
-                continueBorrowing = userPrompt.confirmContinue("Try Another Material?");
-                continue;
-            }
-
-            // Check if borrower can borrow the material
-            if (!borrower.canBorrow()) {
-                System.out.println("Borrower cannot borrow due to restrictions (e.g., strikes or already borrowing material).");
-                continueBorrowing = userPrompt.confirmContinue("Try Another Borrower?");
-                continue;
-            }
-
-            // Borrow the material
-            borrower.borrowMaterial(material);
-            material.borrow(); // Mark material as borrowed
-            System.out.println("Material borrowed successfully!");
-
-            // Print Borrow and Return dates
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            System.out.println("Borrow Date: " + material.getBorrowDate().format(formatter));
-            System.out.println("Return Date: " + material.getReturnDate().format(formatter));
-
-            saveBorrowersToFile();
-            saveAssets();
-
-            continueBorrowing = userPrompt.confirmContinue("Borrowing Another Material?");
-        }
-    }
+    
+    
 
     private static void exitProgram() {
         System.out.println("****************************************************************");
@@ -736,7 +671,7 @@ public class Main {
     }
 
     private static void loadBorrowersFromFile() {
-        borrowers.clear(); // Clear the borrowers list before loading new data
+        borrowers.clear(); 
         FileReader fr = null;
 
         try {
@@ -746,7 +681,7 @@ public class Main {
 
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length < 9) { // Ensure at least 9 fields for basic borrower info
+                if (data.length < 9) { 
                     System.out.println("Skipping invalid line: " + line);
                     continue;
                 }
@@ -764,11 +699,11 @@ public class Main {
                         data[8] // Address
                 );
 
-                // Handle violation number
+                
                 if (data.length > 9) {
                     borrower.setViolationNum(Integer.parseInt(data[9]));
                 } else {
-                    borrower.setViolationNum(0); // Default value if missing
+                    borrower.setViolationNum(0); 
                 }
 
                 // Add to the borrowers list
@@ -793,7 +728,7 @@ public class Main {
     private static void saveBorrowersToFile() {
         Map<Integer, Borrowers> borrowerMap = new HashMap<>();
 
-        // Load existing borrowers from the file
+        
         try (BufferedReader br = new BufferedReader(new FileReader("borrowers.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -816,12 +751,21 @@ public class Main {
             System.out.println("Error loading existing borrowers: " + e.getMessage());
         }
 
-        // Update or add new borrowers
+        
+        Iterator<Map.Entry<Integer, Borrowers>> iterator = borrowerMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Borrowers> entry = iterator.next();
+            if (!borrowers.contains(entry.getValue())) {
+                iterator.remove();
+            }
+        }
+
+        
         for (Borrowers borrower : borrowers) {
             borrowerMap.put(borrower.getId(), borrower);
         }
 
-        // Save updated borrowers back to the file
+        
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("borrowers.txt"))) {
             for (Borrowers borrower : borrowerMap.values()) {
                 bw.write(borrower.getId() + "," + borrower.getLastName() + "," + borrower.getFirstName() + ","
@@ -829,6 +773,7 @@ public class Main {
                         + borrower.getContactNumber() + "," + borrower.getEmail() + "," + borrower.getAddress());
                 bw.newLine();
             }
+            System.out.println("Borrowers saved to file successfully.");
         } catch (IOException e) {
             System.out.println("Error saving borrowers to file: " + e.getMessage());
         }
@@ -844,7 +789,7 @@ public class Main {
     }
 
     private static void loadAssets() {
-        library.clear(); // Clear the library list before loading new data
+        library.clear();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader("assets.txt"));
@@ -919,7 +864,7 @@ public class Main {
     private static void saveAssets() {
         Map<String, Material> materialMap = new HashMap<>();
 
-        // Load existing assets from the file
+        
         try (BufferedReader br = new BufferedReader(new FileReader("assets.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -950,12 +895,12 @@ public class Main {
             System.out.println("Error loading existing assets: " + e.getMessage());
         }
 
-        // Update or add new materials
+        
         for (Material material : library) {
             materialMap.put(material.getMaterialID(), material);
         }
 
-        // Save updated materials back to the file
+        
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("assets.txt"))) {
             for (Material material : materialMap.values()) {
                 StringBuilder line = new StringBuilder();
@@ -1000,7 +945,7 @@ public class Main {
                 }
 
                 bw.write(line.toString());
-                bw.newLine(); // Add a new line for each material
+                bw.newLine(); 
             }
         } catch (IOException e) {
             System.out.println("Error saving assets to file: " + e.getMessage());
