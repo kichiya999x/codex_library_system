@@ -13,11 +13,11 @@ class userPrompt {
             System.out.print(prompt);
             if (scanner.hasNextInt()) {
                 input = scanner.nextInt();
-                scanner.nextLine(); // consume newline
+                scanner.nextLine(); 
                 return input;
             } else {
                 System.out.println("Invalid input. Please enter a positive integer.");
-                scanner.next(); // clear invalid input
+                scanner.next(); 
             }
         }
     }
@@ -30,8 +30,8 @@ class userPrompt {
                 input = scanner.nextInt();
                 if (String.valueOf(input).length() <= 9 && input > 0) {
                     if (findBorrowersById(input, borrowers) == null) {
-                        scanner.nextLine(); // consume the newline
-                        return input; // Return the valid and unique 9-digit input
+                        scanner.nextLine(); 
+                        return input; 
                     } else {
                         System.out.println("This Borrower ID already exists. Please enter a unique ID.");
                     }
@@ -40,7 +40,7 @@ class userPrompt {
                 }
             } else {
                 System.out.println("Invalid input. Please enter a valid 1-9 digit integer.");
-                scanner.next(); // clear the invalid input
+                scanner.next(); 
             }
         }
     }
@@ -51,11 +51,11 @@ class userPrompt {
             System.out.print(prompt);
             if (scanner.hasNextInt()) {
                 input = scanner.nextInt();
-                scanner.nextLine(); // consume newline
+                scanner.nextLine(); 
                 return input;
             } else {
                 System.out.println("Invalid input. Please enter a valid integer.");
-                scanner.next(); // clear invalid input
+                scanner.next();
             }
         }
     }
@@ -176,7 +176,7 @@ class userPrompt {
                         continue;
                 }
 
-                // If all checks pass, return the valid date
+                
                 return date;
             } else {
                 System.out.println("Invalid date format. Please use YYYY-MM-DD.");
@@ -244,7 +244,7 @@ class userPrompt {
                             hasDotAfterAt = true;
                         }
                     } else if (!Character.isLetterOrDigit(c) && c != '_' && c != '-' && c != '+') {
-                        isValid = false; // Invalid character found
+                        isValid = false; 
                         break;
                     }
                 }
@@ -267,7 +267,7 @@ class userPrompt {
 
                 for (char c : input.toCharArray()) {
                     if (!Character.isLetterOrDigit(c) && c != ' ' && c != ',' && c != '.' && c != '-' && c != '/') {
-                        isValid = false; // Invalid character found
+                        isValid = false; 
                         break;
                     }
                 }
