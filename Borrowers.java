@@ -30,6 +30,12 @@ public class Borrowers {
     }
 
     
+    public void incrementViolation() {
+
+        this.violationNum++;
+
+    }
+    
     public int getId() {
         return id;
     }
