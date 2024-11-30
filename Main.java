@@ -555,50 +555,64 @@ public class Main {
     }
 
     private static void DeleteMaterial() {
-        loadAssets();
+        loadAssets(); // Load the current library assets
         boolean continueDeleting = true;
+    
         while (continueDeleting) {
             ClearScreen();
-            System.out.println("********************************************************");
+            System.out.println("**************************************************");
             System.out.println("              Delete Material Information");
-            System.out.println("********************************************************");
-            String materialID = userPrompt.promptForValidMaterialID("Enter Material ID: ", library);
-
-            
-            Material material = findMaterialByID(materialID);
-            while (material == null) {
-                System.out.println("Material ID not found. Please enter a valid Material ID.");
-                materialID = userPrompt.promptForValidMaterialID("Enter Material ID: ", library);
-                material = findMaterialByID(materialID); 
+            System.out.println("**************************************************");
+    
+            // Prompt for a valid Material ID
+            System.out.print("Enter Material ID to delete: ");
+            String materialID = input.nextLine().trim();
+    
+            // Check if Material ID exists
+            Material materialToDelete = findMaterialByID(materialID);
+            if (materialToDelete == null) {
+                System.out.println("Error: Material ID not found!");
+                continue; // Skip to the next iteration
             }
-
-            
-            System.out.println("Material Type: " + material.getClass().getSimpleName());
+    
+            // Confirm deletion
+            System.out.println("Material Found: " + materialToDelete);
             System.out.println("Are you sure you want to delete this material?");
             System.out.println("[1] Yes");
             System.out.println("[2] No");
-
-            int deleteChoice = userPrompt.getValidIntegerInput("Enter Choice: ");
-
-            switch (deleteChoice) {
+    
+            int choice = input.nextInt();
+            input.nextLine(); // Consume newline
+    
+            switch (choice) {
                 case 1:
-                    library.remove(material);
-                    System.out.println("Material Information Deleted Successfully!");
-                    saveAssets();
+                    // Remove the material
+                    boolean removed = library.removeIf(mat -> mat.getMaterialID().equals(materialID));
+                    if (removed) {
+                        System.out.println("Material successfully deleted!");
+                        saveAssets(); // Save changes to file
+                    } else {
+                        System.out.println("Error: Material could not be deleted!");
+                    }
                     break;
-
+    
                 case 2:
-                    System.out.println("Material Information Deletion Cancelled.");
+                    System.out.println("Deletion cancelled.");
                     break;
-
+    
                 default:
-                    System.out.println("Invalid choice! Please select a valid option.");
-                    continue;
+                    System.out.println("Invalid choice. Please try again.");
             }
-
-            continueDeleting = userPrompt.confirmContinue("Continue Deleting Another Material?");
+    
+            // Ask user if they want to delete another material
+            System.out.print("Do you want to delete another material? [yes/no]: ");
+            String response = input.nextLine().trim().toLowerCase();
+            continueDeleting = response.equals("yes");
         }
     }
+    
+    
+    
 
     private static void ViewBorrower() {
         loadBorrowersFromFile();
