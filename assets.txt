@@ -1,1 +1,2 @@
-book,2031,2014,Pulh,10,Tie,ROI
+book,2031,2014,Pulh,9,Tie,ROI
+magazine,2030,2004,Publi,10,Vogue
