@@ -108,14 +108,14 @@ public class Main {
                     System.out.println("********************************************************");
                     System.out.println("Borrow Material");
                     System.out.println("********************************************************");
-                    //BorrowMaterial();
+                    borrowMaterial();
                     break;
                 case 4:
                     ClearScreen();
                     System.out.println("********************************************************");
                     System.out.println("Borrow Material");
                     System.out.println("********************************************************");
-                    // ReturnMaterial();
+                    returnMaterial();
                     break;
 
                 case 5:
@@ -135,7 +135,7 @@ public class Main {
                     ClearScreen();
                     continueRunning = false;
                     exitProgram();
-
+                    break;
                 default:
                     System.out.println("Invalid Choice!!! Please Try Again!!!");
             }
@@ -664,8 +664,97 @@ public class Main {
         }
     }
 
+    private static void borrowMaterial() {
+        loadBorrowersFromFile();
+        loadAssets();
+
+        System.out.println("********************************************************");
+        System.out.println("              Borrow Material");
+        System.out.println("********************************************************");
+
+        int borrowerId = userPrompt.getValidIntegerInput("Enter Borrower ID: ");
+        Borrowers borrower = findBorrowersById(borrowerId);
+
+        if (borrower == null) {
+            System.out.println("Borrower not found.");
+            return;
+        }
+
+        if (borrower.getViolationNum() >= 3) {
+            System.out.println("Borrower has reached the maximum number of violations.");
+            return;
+        }
+
+        if (borrower.getBorrowedMaterial() != null) {
+            System.out.println("Borrower already has a borrowed material.");
+            return;
+        }
+
+        String materialID = userPrompt.promptForValidMaterialID("Enter Material ID: ", library);
+        Material material = findMaterialByID(materialID);
     
+        if (material == null) {
+            System.out.println("Material not found.");
+            return;
+        }
+
+        if (material.getCopies() <= 0) {
+            System.out.println("No copies available for borrowing.");
+            return;
+        }
+
+        material.borrow();
+        borrower.setBorrowedMaterial(material);
+        saveAssets();
+        saveBorrowersToFile();
+
+        // Add to history
+        borrowersHistoryMap.computeIfAbsent(borrowerId, BorrowersHistory::new)
+                .addTransaction(materialID, LocalDate.now().toString(), "Not Returned Yet");
+        assetHistoryMap.computeIfAbsent(materialID, id -> new AssetHistory(id))
+                .addTransaction(borrowerId, LocalDate.now().toString(), "Not Returned Yet");
+
+        System.out.println("Material borrowed successfully!");
+    }
     
+    private static void returnMaterial() {
+        System.out.println("********************************************************");
+        System.out.println("              Return Material");
+        System.out.println("********************************************************");
+
+        int borrowerId = userPrompt.getValidIntegerInput("Enter Borrower ID: ");
+        Borrowers borrower = findBorrowersById(borrowerId);
+
+        if (borrower == null) {
+            System.out.println("Borrower not found.");
+            return;
+        }
+
+        Material borrowedMaterial = borrower.getBorrowedMaterial();
+
+        if (borrowedMaterial == null) {
+            System.out.println("No borrowed material found for this borrower.");
+            return;
+        }
+
+        borrowedMaterial.returnMaterial();
+        borrower.setBorrowedMaterial(null);
+        saveAssets();
+        saveBorrowersToFile();
+
+        // Update history
+        BorrowersHistory borrowerHistory = borrowersHistoryMap.get(borrowerId);
+        if (borrowerHistory != null) {
+            borrowerHistory.addTransaction(borrowedMaterial.getMaterialID(), "Borrow Date", LocalDate.now().toString());
+        }
+
+        AssetHistory assetHistory = assetHistoryMap.get(borrowedMaterial.getMaterialID());
+        if (assetHistory != null) {
+            assetHistory.addTransaction(borrowerId, "Borrow Date", LocalDate.now().toString());
+        }
+
+        System.out.println("Material returned successfully!");
+    }
 
     private static void exitProgram() {
         System.out.println("****************************************************************");
