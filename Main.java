@@ -123,7 +123,7 @@ public class Main {
                     System.out.println("********************************************************");
                     System.out.println("Borrower's History");
                     System.out.println("********************************************************");
-                    viewBorrowerHistory();
+                    viewBorrowersHistory();
                     break;
                 case 6:
                     ClearScreen();
@@ -136,6 +136,7 @@ public class Main {
                     continueRunning = false;
                     exitProgram();
                     break;
+                    
                 default:
                     System.out.println("Invalid Choice!!! Please Try Again!!!");
             }
@@ -144,7 +145,7 @@ public class Main {
         userPrompt.closeScanner();
     }
 
-    private static void viewBorrowerHistory() {
+    private static void viewBorrowersHistory() {
         int borrowerId = userPrompt.getValidIntegerInput("Enter Borrower ID: ");
         BorrowersHistory history = borrowersHistoryMap.get(borrowerId);
         if (history != null) {
@@ -152,8 +153,9 @@ public class Main {
         } else {
             System.out.println("No history found for Borrower ID: " + borrowerId);
         }
+        System.out.println("Press Enter to return to the main menu...");
+        input.nextLine();
     }
-
     private static void viewAssetHistory() {
         String materialID = userPrompt.promptForValidMaterialID("Enter Material ID: ", library);
         AssetHistory history = assetHistoryMap.get(materialID);
@@ -162,6 +164,8 @@ public class Main {
         } else {
             System.out.println("No history found for Material ID: " + materialID);
         }
+        System.out.println("Press Enter to return to the main menu...");
+        input.nextLine();
     }
 
 
@@ -779,8 +783,16 @@ public class Main {
     }
 
     private static void ClearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        try {
+            if (System.getProperty("os.name").contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (IOException | InterruptedException ex) {
+            System.out.println("Error clearing the screen: " + ex.getMessage());
+        }
     }
 
     private static void loadBorrowersFromFile() {

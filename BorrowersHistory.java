@@ -19,11 +19,15 @@ public class BorrowersHistory {
         System.out.println("              Borrower's Transaction History");
         System.out.println("********************************************************");
         System.out.println("Borrower ID: " + borrowerId);
-        for (Transaction transaction : transactions) {
-            System.out.println("Material ID: " + transaction.getMaterialID());
-            System.out.println("Borrow Date: " + transaction.getBorrowDate());
-            System.out.println("Return Date: " + transaction.getReturnDate());
-            System.out.println("--------------------------------------------------------");
+        if (transactions.isEmpty()) {
+            System.out.println("No asset borrowed.");
+        } else {
+            for (Transaction transaction : transactions) {
+                System.out.println("Material ID: " + transaction.getMaterialID());
+                System.out.println("Borrow Date: " + transaction.getBorrowDate());
+                System.out.println("Return Date: " + transaction.getReturnDate());
+                System.out.println("--------------------------------------------------------");
+            }
         }
     }
 
